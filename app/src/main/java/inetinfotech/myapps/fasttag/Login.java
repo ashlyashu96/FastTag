@@ -35,7 +35,7 @@ public class Login extends AppCompatActivity {
     EditText lpswd,lmail;
     TextView msglogin;
     public static final int RequestPermissionCode = 1;
-
+    String status;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +70,15 @@ public class Login extends AppCompatActivity {
 //If we are getting success from server
 
                             //  txt.setVisibility(View.VISIBLE);
+                            try {
+                                JSONArray jsonArray=new JSONArray(response);
+                                for(int i=0;i<jsonArray.length();i++){
+                                    JSONObject json_obj = jsonArray.getJSONObject(i);
+                                    status=json_obj.getString("status");
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                             if(response.contains("success"))
                             {
 
