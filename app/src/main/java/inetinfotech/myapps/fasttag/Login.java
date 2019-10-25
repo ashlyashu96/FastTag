@@ -1,9 +1,12 @@
 package inetinfotech.myapps.fasttag;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -31,18 +34,17 @@ public class Login extends AppCompatActivity {
     Button llogin;
     EditText lpswd,lmail;
     TextView msglogin;
-    String email,password;
-
+    public static final int RequestPermissionCode = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        EnableRuntimePermission();
         msglogin = findViewById(R.id.textView2);
         lmail = findViewById(R.id.txt_lname);
         lpswd = findViewById(R.id.txt_lpswd);
         llogin=findViewById(R.id.btn_llogin);
-
 
         llogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,29 +70,23 @@ public class Login extends AppCompatActivity {
 //If we are getting success from server
 
                             //  txt.setVisibility(View.VISIBLE);
-if(response.contains("success"))
-{
+                            if(response.contains("success"))
+                            {
 
-    Intent intent = new Intent(Login.this, MainActivity.class);
-    startActivity(intent);
-}
-else
+                                Intent intent = new Intent(Login.this, MainActivity.class);
+                                startActivity(intent);
+                            }
+                            else
 
-{
-    Toast.makeText(Login.this,"Invalid Login",Toast.LENGTH_SHORT).show();
-}
-
-
-
+                            {
+                                Toast.makeText(Login.this,"Invalid Login",Toast.LENGTH_SHORT).show();
+                            }
 
                             try {
                                 JSONArray jsonArray=new JSONArray(response);
                                 for(int i=0;i<jsonArray.length();i++){
                                     JSONObject json_obj = jsonArray.getJSONObject(i);
-
-
-
-                                }
+       }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -121,6 +117,40 @@ else
             requestQueue.add(stringRequest);
         }
 
+    public void EnableRuntimePermission() {
 
+        if (ActivityCompat.shouldShowRequestPermissionRationale(Login.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+// Toast.makeText(Cpature_image.this,"CAMERA permission allows us to Access CAMERA app", Toast.LENGTH_LONG).show();
+
+        } else {
+
+            ActivityCompat.requestPermissions(Login.this, new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestPermissionCode);
+
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int RC, String per[], int[] PResult) {
+
+        switch (RC) {
+
+            case RequestPermissionCode:
+
+                if (PResult.length > 0 && PResult[0] == PackageManager.PERMISSION_GRANTED) {
+
+// Toast.makeText(Cpature_image.this,"Permission Granted, Now your application can access CAMERA.", Toast.LENGTH_LONG).show();
+
+                } else {
+
+                    Toast.makeText(this, "Permission Canceled, Now your application cannot access CAMERA.", Toast.LENGTH_LONG).show();
+
+                }
+                break;
+        }
+    }
     }
 

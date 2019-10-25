@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -53,13 +55,18 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends AppCompatActivity implements PaymentResultListener {
     Button btnrchrge;
-    EditText txtamt, txtid;
+    EditText txtamt;
+    TextView txtid;
+           
     String tid,fastid;
     final int UPI_PAYMENT = 0;
     String a,b;
     Bitmap bitmap;
     ImageView imageView;
     ProgressBar pg;
+SharedPreferences sh,shh;
+
+    public boolean shlogins=false;
     public final static int QRcodeWidth = 500 ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +78,12 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
         a= txtamt.getText().toString();
         imageView=findViewById(R.id.imageView3);
         pg=findViewById(R.id.progressBar2);
+        sh= getSharedPreferences("reg",MODE_PRIVATE);
+        SharedPreferences.Editor v=sh.edit();
+        v.putBoolean("hi",true);
+        v.apply();
+        shh= getSharedPreferences("regg",MODE_PRIVATE);
+        shlogins=shh.getBoolean("hii",false);
         btnrchrge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,9 +98,6 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
             }
         });
     }
-
-
-
 
     Bitmap TextToImageEncode(String Value) throws WriterException {
         BitMatrix bitMatrix;
@@ -176,7 +186,18 @@ public class MainActivity extends AppCompatActivity implements PaymentResultList
                                 e.printStackTrace();
                             }
                             imageView.setImageBitmap(bitmap);
-                            saveimage();
+                            if(shlogins)
+                            {
+                                pg.setVisibility(View.INVISIBLE);
+                                Toast.makeText(MainActivity.this,"OR Code Updated", Toast.LENGTH_SHORT).show();
+
+                            }
+                            else {
+                                SharedPreferences.Editor f = shh.edit();
+                                f.putBoolean("hii", true);
+                                f.apply();
+                                saveimage();
+                            }
                         }
                         else
                         {
@@ -291,6 +312,7 @@ public void saveimage()
     String fileName = String.format("%d.jpg", System.currentTimeMillis());
     File outFile = new File(dir, fileName);
     Toast.makeText(MainActivity.this,"Your FastTag Id is Stored In Device", Toast.LENGTH_SHORT).show();
+
     try {
         outStream = new FileOutputStream(outFile);
     } catch (FileNotFoundException e) {
@@ -309,7 +331,7 @@ public void saveimage()
     }
 
 }
-    private String decrypt(String out, String anoop) throws Exception {
+  /*  private String decrypt(String out, String anoop) throws Exception {
         SecretKeySpec k=gen(anoop);
         Cipher cipher=Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE,k);
@@ -318,7 +340,7 @@ public void saveimage()
         String n=new String(deco);
         return n;
 
-    }
+    }*/
 
     private String encrypt(String user, String pass) throws Exception
     {
